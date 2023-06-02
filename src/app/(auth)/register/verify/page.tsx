@@ -26,7 +26,7 @@ export default function UserVerification() {
   const credentialsAreNotAvailable = !(userId && secret);
 
   useEffect(() => {
-       appwriteApi.getCurrentSession().then((session) => {
+       appwriteApi.getLoggedInUserSession().then((session) => {
           console.log(session);
        }).catch((error) => {
            toastErrorHandler(error);

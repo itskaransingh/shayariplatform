@@ -1,8 +1,16 @@
 import { Client as Appwrite, Databases, Account, Models, ID } from "appwrite";
+import { TPostFormSchema, TPostSchema } from "./validations/post";
 
 interface ISdk {
-  dbobj: Databases | null;
-  accountobj: Account;
+  db: Databases ;
+  account: Account;
+}
+
+type TCreateUser = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 let appwriteApi = {
@@ -19,13 +27,13 @@ let appwriteApi = {
       .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID as string);
 
     appwriteApi.clientSdk = {
-      dbobj: null,
-      accountobj: new Account(appwriteClient),
+      db: new Databases(appwriteClient),
+      account: new Account(appwriteClient),
     };
     return appwriteApi.clientSdk;
   },
-  deleteCurrentSession: () => {
-    return appwriteApi.clientSideProvider().accountobj.deleteSession("current");
+  logout: () => {
+    return appwriteApi.clientSideProvider().account.deleteSession("current");
   },
   createOauthGoogle: (
     successUrl: string = "http://localhost:3000/",
@@ -33,40 +41,46 @@ let appwriteApi = {
   ) => {
     return appwriteApi
       .clientSideProvider()
-      .accountobj.createOAuth2Session("google", successUrl, failureUrl);
+      .account.createOAuth2Session("google", successUrl, failureUrl);
   },
   createUser: ({
     id,
     name,
     email,
     password,
-  }: {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-  }) => {
+  }:TCreateUser) => {
     return appwriteApi
       .clientSideProvider()
-      .accountobj.create(id, email, password, name);
+      .account.create(id, email, password, name);
   },
-  createEmailSession: (email: string, password: string) => {
+  signInWithEmailAndPassword: (email: string, password: string) => {
     return appwriteApi
       .clientSideProvider()
-      .accountobj.createEmailSession(email, password);
+      .account.createEmailSession(email, password);
   },
-  sendVerificationEmail: (url: string = "http://localhost:3000/register/verify?from=feed/3213e2e23dece") => {
-    return appwriteApi.clientSideProvider().accountobj.createVerification(url);
+  sendVerificationEmail: (url: string = "http://localhost:3000/register/verify?from=/feed/3213e2e23dece") => {
+    return appwriteApi.clientSideProvider().account.createVerification(url);
   },
   verifyEmail: (userId: string, secret:string) => {
-    return appwriteApi.clientSideProvider().accountobj.updateVerification(userId, secret);
+    return appwriteApi.clientSideProvider().account.updateVerification(userId, secret);
   },
-  getCurrentSession: () => {
-    return appwriteApi.clientSideProvider().accountobj.getSession("current");
+  getLoggedInUserSession: () => {
+    return appwriteApi.clientSideProvider().account.getSession("current");
   },
-  getUserAccount: () => {
-    return appwriteApi.clientSideProvider().accountobj.get();
+  getLoggedInUser: () => {
+    return appwriteApi.clientSideProvider().account.get();
   },
+  isUserLoggedIn: async () => {
+    try{
+      await appwriteApi.clientSideProvider().account.getSession("current");
+      return true
+    } catch {
+      return false
+    }
+  }, 
+  createPost: async (post:TPostSchema) => {
+    return await appwriteApi.clientSideProvider().db.createDocument(process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string, process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID as string,  ID.unique(), post);
+  }
 };
 
 //called from Next.js/React in a top-level component,  I  use useSWR() to call this and return the account object.
@@ -75,7 +89,7 @@ async function getUserAccount() {
   let account: Models.User<Models.Preferences> | null =
     {} as Models.User<Models.Preferences>;
   try {
-    account = await appwriteApi.getUserAccount();
+    account = await appwriteApi.getLoggedInUser();
   } catch (error) {
     console.log("Error getting current user account!", error);
     return null

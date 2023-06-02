@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Input, Label } from "../ui";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/Button";
@@ -9,10 +8,10 @@ import { Icons } from "../ui/Icons";
 import { useState } from "react";
 import appwriteApi from "@/lib/appwrite";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AppwriteException, ID, Models } from "appwrite";
+import { Models } from "appwrite";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toastErrorHandler } from "@/lib/errorHandling";
-import { LoginSchema } from "@/lib/validations/auth";
+import { LoginFormSchema, TLoginFormSchema } from "@/lib/validations/auth";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,17 +20,15 @@ export default function LoginForm() {
   const router = useRouter();
   const from = useSearchParams().get("from");
 
-  type TFormData = z.infer<typeof LoginSchema>;
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TFormData>({
-    resolver: zodResolver(LoginSchema),
+  } = useForm<TLoginFormSchema>({
+    resolver: zodResolver(LoginFormSchema),
   });
 
-  const onLoginThroughEmail = async (data: TFormData) => {
+  const onLoginThroughEmail = async (data: TLoginFormSchema) => {
     setIsLoading(true);
 
     let createdUserSession: Models.Session | null = null;

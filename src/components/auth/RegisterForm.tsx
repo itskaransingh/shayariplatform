@@ -1,7 +1,6 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { Input, Label } from "../ui";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/Button";
@@ -12,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AppwriteException, ID } from "appwrite";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toastErrorHandler } from "@/lib/errorHandling";
-import { RegisterSchema } from "@/lib/validations/auth";
+import { RegisterFormSchema, TRegisterFormSchema } from "@/lib/validations/auth";
 import { toast } from "@/hooks/use-toast";
 
 export default function RegisterForm() {
@@ -22,17 +21,16 @@ export default function RegisterForm() {
   const router = useRouter();
   const from = useSearchParams().get("from");
 
-  type TFormData = z.infer<typeof RegisterSchema>;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TFormData>({
-    resolver: zodResolver(RegisterSchema),
+  } = useForm<TRegisterFormSchema>({
+    resolver: zodResolver(RegisterFormSchema),
   });
 
-  const onSubmit = async (data: TFormData) => {
+  const onSubmit = async (data: TRegisterFormSchema) => {
     setIsLoading(true);
     let createdUser;
 
@@ -44,7 +42,7 @@ export default function RegisterForm() {
       });
       console.debug("User Created Successfully", createdUser);
 
-      const newUserSession = await appwriteApi.createEmailSession(
+      const newUserSession = await appwriteApi.signInWithEmailAndPassword(
         data.email,
         data.password
       );

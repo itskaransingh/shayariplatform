@@ -57,7 +57,7 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
           className="cursor-pointer"
           onSelect={async (event) => {
             event.preventDefault();
-            await appwriteApi.deleteCurrentSession();
+            await appwriteApi.logout();
            window.location.reload();
           }}
         >

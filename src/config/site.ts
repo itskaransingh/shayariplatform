@@ -22,7 +22,7 @@ export const siteConfig = {
     },
     {
       title: "Create",
-      href: "/create",
+      href: "/posts/create",
       iconKey: "plusCircle",
     }
   ],
