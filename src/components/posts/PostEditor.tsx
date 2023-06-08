@@ -4,7 +4,7 @@ import { postTypes } from "@/config/constants";
 import { PostFormSchema, TPostFormSchema } from "@/lib/validations/post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Input, Separator } from "../ui";
+import { Separator } from "../ui";
 import { Button } from "../ui/Button";
 import TextareaAutosize from "react-textarea-autosize";
 import EditorJS from "@editorjs/editorjs";
@@ -20,9 +20,8 @@ import {
 } from "../ui/Form";
 import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
 import { useCallback, useRef, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {  useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { z } from "zod";
 import appwriteApi from "@/lib/appwrite";
 import { toastErrorHandler } from "@/lib/errorHandling";
 import { useGlobalContext } from "@/contexts/GlobalContext";
@@ -30,6 +29,8 @@ import { useGlobalContext } from "@/contexts/GlobalContext";
 interface EditorProps {
   post?: {
     content: string;
+    title: string;
+    type: typeof postTypes;
     published: boolean;
   };
 }
@@ -43,6 +44,10 @@ export default function PostEditor({ post }: EditorProps) {
 
   const form = useForm<TPostFormSchema>({
     resolver: zodResolver(PostFormSchema),
+    defaultValues: {
+      title: post?.title || "",
+      type: post?.type as  any,
+    }
   });
 
 const {account} = useGlobalContext()  
@@ -52,10 +57,10 @@ const {account} = useGlobalContext()
   const initializeEditor = useCallback(async () => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
     const Header = (await import("@editorjs/header")).default;
-    const Quote = (await import("@editorjs/quote")).default;
-    const Underline = (await import("@editorjs/underline")).default;
+    // const Quote = (await import("@editorjs/quote")).default;
+    // const Underline = (await import("@editorjs/underline")).default;
 
-    const body = post || { content: "", published: false };
+    const body = post || { content: "" };
 
     let content;
 
@@ -77,8 +82,6 @@ const {account} = useGlobalContext()
         data: content,
         tools: {
           header: Header,
-          quote: Quote,
-          underline: Underline,
         },
       });
       console.log({ editor, ref });
@@ -119,6 +122,10 @@ const {account} = useGlobalContext()
     const contentInString = JSON.stringify(blocks);
 
     console.log({ content: contentInString, ogcontent: blocks, ...data });
+
+    if(!account?.$id){
+     return router.replace("/login")
+    }
 
     let createdPost;
 
@@ -198,7 +205,7 @@ const {account} = useGlobalContext()
                             className="sr-only"
                           />
                         </FormControl>
-                        <div className="text-center p-2 capitalize rounded-md border-2 border-muted   hover:border-accent">
+                        <div className="text-center p-2 capitalize rounded-md border-2 border-muted  cursor-pointer  hover:border-accent">
                           {postType}
                         </div>
                       </FormLabel>

@@ -1,15 +1,27 @@
-import { PostForm } from "@/components/posts";
-import { Separator } from "@/components/ui";
+import { PostEditor } from "@/components/posts";
+import appwriteApi from "@/lib/appwrite";
 
-export default function DraftPost() {
-     return (
-        <div className="flex flex-col gap-6 h-full w-full items-start">
-        <h1 className="text-3xl font-semibold text-start tracking-tight ">
-          {" "}
-          New Post
-        </h1>
-        <Separator />
-        <PostForm />
-      </div>
-     )
+export default async function DraftPost({params}:{
+   params: {draftPostId: string}
+}) {
+  const { draftPostId } = params
+
+  let post ;
+  try{
+    post = await appwriteApi.getPost(draftPostId)
+  } catch(error){
+    console.log({error});
+    post = null;
+  }
+    
+  if(!post) {
+    return <div>Post not found</div>
+  }
+
+  return <PostEditor  post={{
+     content: post.content,
+     title: post.title,
+     type: post.type,
+     published: post.published
+  }}/>;
 }

@@ -11,12 +11,13 @@ import { UserAccountNav } from "./UserAccountNav";
 export default function ProfileBtn({
   className,
   inHeader,
+  
 }: {
   className?: string;
   inHeader?: boolean;
 }) {
   const { account, isAccountDataFetching } = useGlobalContext();
-  if (inHeader) {
+  if (inHeader ) {
     return (
       <UserAccountNav
         user={
@@ -24,13 +25,14 @@ export default function ProfileBtn({
             ? { name: account?.name, email: account?.email, image: null }
             : null
         }
+         className="max-md:hidden"
       />
     );
   }
 
   if (!account && !isAccountDataFetching)
     return (
-      <Link href={"/register"}>
+      <Link href={"/login"}>
         <div
           className={cn(
             buttonVariants({

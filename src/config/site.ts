@@ -1,3 +1,5 @@
+
+
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
@@ -22,7 +24,7 @@ export const siteConfig = {
     },
     {
       title: "Create",
-      href: "/posts/create",
+      href: `/posts/create`,
       iconKey: "plusCircle",
     }
   ],

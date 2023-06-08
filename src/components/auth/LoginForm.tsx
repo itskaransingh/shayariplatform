@@ -34,7 +34,7 @@ export default function LoginForm() {
     let createdUserSession: Models.Session | null = null;
 
     try {
-      createdUserSession = await appwriteApi.createEmailSession(
+      createdUserSession = await appwriteApi.signInWithEmailAndPassword(
         data.email,
         data.password
       );

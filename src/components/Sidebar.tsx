@@ -5,6 +5,7 @@ import { NavIcon, TIconsAvailable } from "./ui/Icons";
 import { cn } from "@/lib/utils";
 
 import { ProfileBtn } from "./ui";
+import { ID } from "appwrite";
 
 export default function Sidebar() {
   return (

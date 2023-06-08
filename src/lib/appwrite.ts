@@ -1,5 +1,5 @@
 import { Client as Appwrite, Databases, Account, Models, ID } from "appwrite";
-import { TPostFormSchema, TPostSchema } from "./validations/post";
+import {  TPostSchema } from "./validations/post";
 
 interface ISdk {
   db: Databases ;
@@ -80,6 +80,12 @@ let appwriteApi = {
   }, 
   createPost: async (post:TPostSchema) => {
     return await appwriteApi.clientSideProvider().db.createDocument(process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string, process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID as string,  ID.unique(), post);
+  },
+  getPost: async (postId: string) => {
+      return await appwriteApi.clientSideProvider().db.getDocument(process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string, process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID as string, postId);
+  },
+  getPosts: async () => {
+    return await appwriteApi.clientSideProvider().db.listDocuments(process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID as string, process.env.NEXT_PUBLIC_APPWRITE_COLLECTION_ID as string);
   }
 };
 

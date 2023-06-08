@@ -33,7 +33,7 @@ export default function UserVerification() {
            console.log({error});
            router.push("/register");
        })
-  },[])
+  },[router])
 
   useEffect(() => {
     if (!verificationLinkResended) {

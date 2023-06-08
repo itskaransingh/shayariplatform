@@ -7,6 +7,10 @@ export enum AuthErrors {
   INVALID_LOGIN_CREDENTIALS = "user_invalid_credentials",
 }
 
+export enum PostErrors {
+  POST_NOT_FOUND = "document_not_found",
+}
+
 export enum GeneralAppwriteExceptions {
   USER_NOT_FOUND = "user_not_found",
   UNAUTHORIZED_ERROR = "general_unauthorized_scope",
@@ -17,6 +21,8 @@ export enum GeneralAppwriteExceptions {
   RATE_LIMIT_REACHED = "general_rate_limit_exceeded",
 }
 
+// general_argument_invalid
+
 export interface IConfigData {
   title: string;
   description?: string;
@@ -24,7 +30,7 @@ export interface IConfigData {
 }
 
 const errorToastConfig: Record<
-  AuthErrors | GeneralAppwriteExceptions,
+  AuthErrors | GeneralAppwriteExceptions | PostErrors,
   IConfigData
 > = {
   [AuthErrors.USER_EXISTS]: {
@@ -42,6 +48,11 @@ const errorToastConfig: Record<
     title: "Email or Password Incorrect",
     description: "Please check the email and password.",
 
+  },
+  [PostErrors.POST_NOT_FOUND]: {
+    title: "Post Not Found",
+    description: "This post does not exist.",
+    duration: 9000,
   },
   [GeneralAppwriteExceptions.USER_NOT_FOUND]: {
     title: "User Or Session Not Found",

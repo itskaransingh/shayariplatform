@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { UserAvatar } from "./UserAvatar";
 import appwriteApi from "@/lib/appwrite";
-import { useRouter } from "next/navigation";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   user: {
@@ -21,17 +20,17 @@ interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
   } | null;
 }
 
-export function UserAccountNav({ user }: UserAccountNavProps) {
-  const router = useRouter()
+export function UserAccountNav({ user, className }: UserAccountNavProps) {
+ 
   if (!user)
     return (
-      <Link href={"/register"}>
+      <Link className={className} href={"/login"}>
         <UserAvatar className="h-8 w-8" />
       </Link>
     );
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
+    <DropdownMenu  >
+      <DropdownMenuTrigger className={className}>
         <UserAvatar
           user={{ name: user.name || null, image: user.image || null }}
           className="h-8 w-8"
